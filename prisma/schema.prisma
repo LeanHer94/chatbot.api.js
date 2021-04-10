@@ -1,0 +1,37 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["microsoftSqlServer"]
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model logs {
+  id          Int     @id @default(autoincrement())
+  description String? @db.VarChar(50)
+  exception   String? @db.VarChar(Max)
+}
+
+model requests {
+  id      Int   @id @default(autoincrement())
+  user_id Int
+  zone_id Int
+  zones   zones @relation(fields: [zone_id], references: [id])
+}
+
+model requestsCache {
+  id               Int       @id @default(autoincrement())
+  timezone         String?   @db.VarChar(20)
+  time_at_timezone DateTime? @db.DateTime
+  time_request     DateTime? @db.DateTime
+}
+
+model zones {
+  id        Int        @id @default(autoincrement())
+  zone      String     @db.VarChar(20)
+  parent    String?    @db.VarChar(20)
+  available Int
+  requests  requests[]
+}
