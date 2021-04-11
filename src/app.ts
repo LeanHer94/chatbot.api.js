@@ -6,26 +6,27 @@ import { areZonesPopulated, getCachedTimeZone, getRequestsCount, getValidRegionP
 import { insertRequest, tryInsertRegion, upsertTimezoneCache } from "./prisma/transactions";
 import { getAllTimezones, getTimeBy } from './worldtime_api/worldtimeapi';
 import moment from 'moment';
+import { serverPort } from './config';
 
 const app = express()
-const port = 3000
+const port = serverPort
 
 app.use(express.json());
 
 const populateTimezones = async () => {
   if (!await areZonesPopulated()) {
-      const timezones = (await getAllTimezones()).data as Array<string>;
+    const timezones = (await getAllTimezones()).data as Array<string>;
 
-      timezones.forEach(timezone => {
-        const regions = timezone.getRegions();
-        const last = regions.pop();
+    timezones.forEach(timezone => {
+      const regions = timezone.getRegions();
+      const last = regions.pop();
 
-        var parent = null;
+      var parent = null;
 
-        regions.forEach(region => {
-          tryInsertRegion(region, parent, region == last);
-        })
+      regions.forEach(async region => {
+        await tryInsertRegion(region, parent, region == last);
       })
+    })
   }
 }
 
@@ -37,7 +38,7 @@ app.post('/timeat', async (req, res) => {
   await populateTimezones(); 
 
   var input = req.body?.Timezone as string;
-  var result: string;
+  var result = 'unknown timezone';
 
   const isKnown = await isKnownZone(input.getLastRegion());
 
@@ -47,25 +48,27 @@ app.post('/timeat', async (req, res) => {
     var path = await getValidRegionPath(input);
 
     if (await shouldUpdateCache(path)) {
-      const time = (await getTimeBy(path)).data;
+      const time = await getTimeBy(path);
 
-      const timezoneMoment = moment.parseZone(time.datetime, moment.ISO_8601);
+      if (time) {
+        const timezoneMoment = moment.parseZone(time.datetime, moment.ISO_8601);
 
-      if (timezoneMoment)
-      {
-        await upsertTimezoneCache(path, timezoneMoment.lxStoreFormat(), moment().lxStoreFormat());
-        result = timezoneMoment.lxFormat();
+        if (timezoneMoment)
+        {
+          await upsertTimezoneCache(path, timezoneMoment.lxStoreFormat(), moment().lxStoreFormat());
+          result = timezoneMoment.lxFormat();
+        } else {
+          result = 'invalid timezone';
+        }
       } else {
-        result = 'invalid timezone';
-      }
+        result = 'world api error';
+      }     
     } else {
       result = moment.parseZone((await getCachedTimeZone(path))).lxFormat();
     }
-
-    res.send(result);
-  } else {
-    res.send('unknown timezone');
   }
+    
+  res.send(result);  
 })
 
 app.post('/timepopularity', async (req, res) => {
