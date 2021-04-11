@@ -1,7 +1,7 @@
 import './extension_methods/String';
 import express from "express";
 import { areZonesPopulated, getCachedTimeZone, getRequestsCount, getValidRegionPath, isKnownZone, shouldUpdateCache } from "./prisma/queries";
-import { insertRequest } from "./prisma/transactions";
+import { insertRequest, upsertTimezoneCache } from "./prisma/transactions";
 
 const app = express()
 const port = 3000
@@ -24,7 +24,7 @@ app.post('/timeat', async (req, res) => {
   await populateTimezones(); 
 
   var input = req.body?.Timezone as string;
-  var result: Date;
+  var result: any;
 
   const isKnown = await isKnownZone(input.getLastRegion());
 
@@ -34,16 +34,16 @@ app.post('/timeat', async (req, res) => {
     var path = await getValidRegionPath(input);
 
     if (await shouldUpdateCache(path)) {
-      var apicall = new Date(); //call external api
+      var unixtime = Date.parse('new Date()'); //call external api
+      
+      if (unixtime)
+      {
+        const date = new Date(unixtime);
+        upsertTimezoneCache(path, date, new Date());
+        //return date.ToString("d MMM yyy HH:mm");
+      }
 
-      // if (Date.TryParse(result, out DateTime date))
-      // {
-      //     this.botRepository.CacheTimeZone(validPath, date, DateTime.Now);
-
-      //     return date.ToString("d MMM yyy HH:mm");
-      // }
-
-      result = apicall;
+      result = 'invalid timezone';
     } else {
       result = await getCachedTimeZone(path)
     }
@@ -51,7 +51,7 @@ app.post('/timeat', async (req, res) => {
     res.send(result); //format ("d MMM yyy HH:mm")
   }
 
-  return res.send("unknown timezone");
+  return res.send('unknown timezone');
 })
 
 app.post('/timepopularity', async (req, res) => {
