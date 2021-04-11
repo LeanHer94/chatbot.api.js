@@ -1,1 +1,1 @@
-# chatbot.js
+# chatbot.api.js
