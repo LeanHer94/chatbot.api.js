@@ -1,0 +1,1 @@
+const api = env("TIME_API")
