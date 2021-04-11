@@ -1,9 +1,9 @@
 import { apiCacheTime } from '../config';
 import prisma from './prismaClient';
 
-const getRequestsCount = async (lookup: string): Promise<number> => {
+const getRequestsCount = async (lookup: string): Promise<string> => {
         return await prisma.$queryRaw`
-            SELECT count(1) FROM requests h
+            SELECT count(1) as result FROM requests h
             WHERE EXISTS(
                 SELECT 1 FROM
                     (SELECT id FROM zones WHERE zone = ${lookup} AND available = 1 union
@@ -15,7 +15,7 @@ const getRequestsCount = async (lookup: string): Promise<number> => {
                                         AND z2.zone = z1.parent)) as ids
                 WHERE ids.id = h.zone_id);`
                 .then(r => {
-                    return r[0];
+                    return r[0].result.toString();
                 });
     }
 

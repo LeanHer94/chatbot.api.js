@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "tsc && node dist/app.js",
-    "dev": "nodemon --config nodemon.json --inspect-brk src/app.ts"
+    "dev": "nodemon --config nodemon.json --inspect-brk=9230 src/app.ts"
   },
   "author": "Leandro Hereñu",
   "license": "ISC",

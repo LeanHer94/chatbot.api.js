@@ -75,7 +75,7 @@ app.post('/timepopularity', async (req, res) => {
   var input = req.body?.Timezone;
 
   await populateTimezones();
-  return await getRequestsCount(input)
+  res.send(await getRequestsCount(input))
 })
 
 app.listen(port, () => {
