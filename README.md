@@ -9,12 +9,12 @@
 
 ### ------ To Start API ------
 * npm run dev
-* F5 to attach vs code debugger to process
+* F5 to attach vs code debugger to nodemon process
 * port 3000
 
 ### ------ To Start Bot -----
 * npm run dev
-* F5 to attach vs code debugger to process
+* F5 to attach vs code debugger to nodemon process
 * port 3120
 
 ### ------ To Talk with the bot ----
