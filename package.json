@@ -1,5 +1,5 @@
 {
-  "name": "chatbot api",
+  "name": "chatbot.api",
   "version": "1.0.0",
   "description": "Chatbot API",
   "main": "dist/app.js",
