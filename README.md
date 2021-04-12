@@ -2,10 +2,13 @@
 
 ## ENVIRONMENT
 * Install SQL Server Express (And Management Studio if you want to make your own queries). https://www.microsoft.com/en-us/sql-server/sql-server-downloads
+* Install SQL Management Studio in order to run database script
 * npm i to install dependencies
 
 ### ------ To Generate SQL Databse Schema -------
-* Execute Database Script
+* Open SQL Management Studio, select "Query" in the toolbar and check "SQLCMD Mode".
+* Press "New Query"
+* Paste and execute the Database Script
 
 ### ------ To Start API ------
 * npm run dev
