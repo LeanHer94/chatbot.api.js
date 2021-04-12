@@ -23,7 +23,7 @@ model requests {
 
 model requestsCache {
   id               Int       @id @default(autoincrement())
-  timezone         String?   @db.VarChar(20)
+  timezone         String?   @db.VarChar(50)
   time_at_timezone DateTime? @db.DateTime
   time_request     DateTime? @db.DateTime
 }
