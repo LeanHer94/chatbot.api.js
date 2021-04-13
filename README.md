@@ -8,7 +8,6 @@
   * (SQLManager{VERSION}) -> Network configuration -> Protocols -> enable
   * On IP Addresses tab set tcp port
 * npm i to install dependencies
-* npx prisma generate to generate orm model (currently model is not being used but idea would be to replare raw sql with prisma queries) 
 * Ask for environment file .env
 
 ### ------ To Generate SQL Databse Schema -------
