@@ -4,7 +4,9 @@
 * Install SQL Server Express (And Management Studio if you want to make your own queries). https://www.microsoft.com/en-us/sql-server/sql-server-downloads
 * Install SQL Management Studio in order to run database script
 * Create bot SQL user and login
-* Once installed, make sure TCP/IP connection (port 1433) is enabled in your database (SQLManager{VERSION}) -> Network configuration -> Protocols
+* Once installed, make sure TCP/IP connection (port 1433) is enabled in your database 
+  * (SQLManager{VERSION}) -> Network configuration -> Protocols -> enable
+  * On IP Addresses tab set tcp port
 * npm i to install dependencies
 * npx prisma generate to generate orm model (currently model is not being used but idea would be to replare raw sql with prisma queries) 
 * Ask for environment file .env
