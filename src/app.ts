@@ -1,12 +1,13 @@
-import "./extension_methods/String";
-import "./extension_methods/Moment";
+import "./core/extension_methods/String";
+import "./core/extension_methods/Moment";
 
 import express from "express";
 import { serverPort } from "./config";
-import { timeAt, timePopularity } from "./timezoneService";
 import { handleError } from "./core/errorHandler";
+import { DIProvider } from "./core/diProvider";
 
 const app = express();
+const diProvider = new DIProvider();
 
 app.use(express.json());
 
@@ -16,7 +17,7 @@ app.get("/", (req, res) => {
 
 app.post("/timeat", async (req, res, next) => {
   try {
-    const result = await timeAt(req.body?.Timezone);
+    const result = await diProvider.getTimezoneService().timeAt(req.body?.Timezone);
     res.send(result);
   } catch (err) {
     next(err);
@@ -25,7 +26,7 @@ app.post("/timeat", async (req, res, next) => {
 
 app.post("/timepopularity", async (req, res, next) => {
   try {
-    const result = await timePopularity(req.body?.Timezone);
+    const result = await diProvider.getTimezoneService().timePopularity(req.body?.Timezone);
     res.send(result);
   } catch (err) {
     next(err);
