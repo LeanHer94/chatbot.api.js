@@ -13,6 +13,7 @@ import {
 } from "./prisma/transactions";
 import { getAllTimezones, getTimeBy } from "./worldtime_api/worldtimeapi";
 import moment from "moment";
+import { AppError } from "./core/appError";
 
 const populateTimezones = async () => {
   if (!(await areZonesPopulated())) {
@@ -33,38 +34,36 @@ const populateTimezones = async () => {
 
 const timeAt = async (input: string) => {
   await populateTimezones();
-  let result = "unknown timezone";
 
   const isKnown = await isKnownZone(input.getLastRegion());
 
-  if (isKnown) {
-    await insertRequest(input);
-
-    const path = await getValidRegionPath(input);
-
-    if (await shouldUpdateCache(path)) {
-      const time = await getTimeBy(path);
-
-      if (time) {
-        const timezoneMoment = moment.parseZone(time.datetime, moment.ISO_8601);
-
-        if (timezoneMoment) {
-          await upsertTimezoneCache(
-            path,
-            timezoneMoment.lxStoreFormat(),
-            moment().lxStoreFormat()
-          );
-          result = timezoneMoment.lxFormat();
-        } else {
-          result = "invalid timezone";
-        }
-      } else {
-        result = "world api error";
-      }
-    } else {
-      result = moment.parseZone(await getCachedTimeZone(path)).lxFormat();
-    }
+  if (!isKnown) {
+    new AppError("unknown timezone");
   }
+
+  await insertRequest(input);
+
+  const path = await getValidRegionPath(input);
+  const isCacheValid = await shouldUpdateCache(path);
+
+  if (isCacheValid) {
+    return moment.parseZone(await getCachedTimeZone(path)).lxFormat();
+  }
+
+  const time = await getTimeBy(path);
+
+  const timezoneMoment = moment.parseZone(time.datetime, moment.ISO_8601);
+
+  if (timezoneMoment) {
+    await upsertTimezoneCache(
+      path,
+      timezoneMoment.lxStoreFormat(),
+      moment().lxStoreFormat()
+    );
+    return timezoneMoment.lxFormat();
+  }
+
+  new AppError("invalid timezone");
 };
 
 const timePopularity = async (input: string) => {

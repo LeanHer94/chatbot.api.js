@@ -1,23 +1,23 @@
 import axios from "axios";
 import { apiRetry, apiRetryTime, worldtimeapi } from "../config";
+import { AppError } from "../core/appError";
+
+const retry = (func: Function, retryCount: number, err) => {
+  //retry strategy
+  if (err.response.status == 503 && (!retryCount || retryCount <= +apiRetry)) {
+    setTimeout((_) => func(retryCount ? retryCount++ : 1), +apiRetryTime);
+  }
+
+  throw new AppError("world api error", err);
+};
 
 const getTimeBy = async (timezone: string, retryCount?: number) => {
   try {
-    if (!retryCount || retryCount <= +apiRetry) {
-      const response = await axios.get(`${worldtimeapi}${timezone}`);
+    const response = await axios.get(`${worldtimeapi}${timezone}`);
 
-      return response.data;
-    }
-
-    return null;
-  } catch (e) {
-    //retry strategy
-    if (e.response.status == 503) {
-      setTimeout(
-        (_) => getTimeBy(timezone, retryCount ? retryCount++ : 1),
-        +apiRetryTime
-      );
-    }
+    return response.data;
+  } catch (err) {
+    retry((count) => getTimeBy(timezone, count), retryCount, err);
   }
 };
 
