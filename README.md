@@ -3,8 +3,10 @@
 ## ENVIRONMENT
 * Install SQL Server Express (And Management Studio if you want to make your own queries). https://www.microsoft.com/en-us/sql-server/sql-server-downloads
 * Install SQL Management Studio in order to run database script
-* Once installed, make sure TCP/IP connection (port 1433) is enabled in your database (SQL Manager VERSION) -> Network configuration -> Protocols
+* Create bot SQL user and login
+* Once installed, make sure TCP/IP connection (port 1433) is enabled in your database (SQLManager{VERSION}) -> Network configuration -> Protocols
 * npm i to install dependencies
+* npx prisma generate to generate orm model (currently model is not being used but idea would be to replare raw sql with prisma queries) 
 * Ask for environment file .env
 
 ### ------ To Generate SQL Databse Schema -------
@@ -14,19 +16,8 @@
 
 ### ------ To Start API ------
 * npm run dev
-* F5 to attach vs code debugger to nodemon process
-* port 3000
-
-### ------ To Start Bot -----
-* npm run dev
 * F5 to attach vs code debugger to nodemon process 9230
-* port 3120
-
-### ------ To Talk with the bot ----
-* Open https://webchat.freenode.net/ on your browser
-* Enter your NickName and join the channel configured in IRCClient on ChatBotServer.sln (#lxbuniquekdskds)
-* To know which commands are available send !commands
-* !timepopularity accepts timezones, prefixes and also suffixes (like the Vancouver example)
+* port 3000
 
 ### ------ To Test the API -----
 * Open Postman
