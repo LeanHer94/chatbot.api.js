@@ -3,8 +3,9 @@ import "../core/extension_methods/Moment";
 
 import { TimezoneService } from "../bll/timezoneService";
 import { AppError } from "../core/appError";
-import { setupQuery, setupTransaction, setupWorldTimeApi } from "./diHelpers";
+import { setupQuery, setupTransaction, setupWorldTimeApi } from "./dependencySetups";
 import { assert, expect } from "chai";
+import { asyncShouldThrow } from "./helpers";
 
 const chai = require("chai");
 const chaiAsPromised = require("chai-as-promised");
@@ -19,7 +20,7 @@ chai.use(chaiAsPromised);
 
 describe("timezone service", () => {
   describe("time at", () => {
-    it("zone is not known", () => {
+    it("zone is not known", async () => {
       //Arrange
       const query = setupQuery({ isKnownZone: false });
       const transac = setupTransaction();
@@ -28,10 +29,8 @@ describe("timezone service", () => {
 
       const param = "BuenosAires";
 
-      //Act
       //Assert
-      //EXPECTED NOT WORKING
-      assert.isRejected(service.timeAt(param), AppError); //"unknown timezone"
+      await asyncShouldThrow(() => service.timeAt(param), "unknown timezone");
     });
   });
 });

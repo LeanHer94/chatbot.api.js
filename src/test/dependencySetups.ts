@@ -1,4 +1,3 @@
-import { AxiosResponse } from "axios";
 import { Query } from "../dal/queries";
 import { Transaction } from "../dal/transactions";
 import { WorldTimeApi } from "../integrations/worldtime/worldtimeapi";
