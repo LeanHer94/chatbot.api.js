@@ -3,6 +3,7 @@
 ## ENVIRONMENT
 * Install SQL Server Express (And Management Studio if you want to make your own queries). https://www.microsoft.com/en-us/sql-server/sql-server-downloads
 * Install SQL Management Studio in order to run database script
+* Once installed, make sure TCP/IP connection (port 1433) is enabled in your database (SQL Manager VERSION) -> Network configuration -> Protocols
 * npm i to install dependencies
 
 ### ------ To Generate SQL Databse Schema -------
