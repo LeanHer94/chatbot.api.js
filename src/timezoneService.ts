@@ -38,15 +38,15 @@ const timeAt = async (input: string) => {
   const isKnown = await isKnownZone(input.getLastRegion());
 
   if (!isKnown) {
-    new AppError("unknown timezone");
+    throw new AppError("unknown timezone");
   }
 
   await insertRequest(input);
 
   const path = await getValidRegionPath(input);
-  const isCacheValid = await shouldUpdateCache(path);
+  const isCacheInvalid = await shouldUpdateCache(path);
 
-  if (isCacheValid) {
+  if (!isCacheInvalid) {
     return moment.parseZone(await getCachedTimeZone(path)).lxFormat();
   }
 
@@ -63,7 +63,7 @@ const timeAt = async (input: string) => {
     return timezoneMoment.lxFormat();
   }
 
-  new AppError("invalid timezone");
+  throw new AppError("invalid timezone");
 };
 
 const timePopularity = async (input: string) => {
