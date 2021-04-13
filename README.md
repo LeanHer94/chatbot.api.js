@@ -5,6 +5,7 @@
 * Install SQL Management Studio in order to run database script
 * Once installed, make sure TCP/IP connection (port 1433) is enabled in your database (SQL Manager VERSION) -> Network configuration -> Protocols
 * npm i to install dependencies
+* Ask for environment file .env
 
 ### ------ To Generate SQL Databse Schema -------
 * Open SQL Management Studio, select "Query" in the toolbar and check "SQLCMD Mode".
