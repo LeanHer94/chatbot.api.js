@@ -31,7 +31,7 @@ export class TimezoneService {
 
     const timezoneMoment = moment.parseZone(time.datetime, moment.ISO_8601);
 
-    if (timezoneMoment) {
+    if (timezoneMoment?.isValid()) {
       await this.transac.upsertTimezoneCache(
         path,
         timezoneMoment.lxStoreFormat(),

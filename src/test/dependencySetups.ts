@@ -2,7 +2,7 @@ import { Query } from "../dal/queries";
 import { Transaction } from "../dal/transactions";
 import { WorldTimeApi } from "../integrations/worldtime/worldtimeapi";
 
-class QuerySetup {
+interface QuerySetup {
   areZonesPopulated?: boolean;
   cachedTimezone?: string;
   requestsCount?: string;
@@ -34,7 +34,7 @@ const setupQuery = (setup: QuerySetup): Query => {
   };
 };
 
-class TransactionSetup {}
+interface TransactionSetup {}
 
 const setupTransaction = (setup?: TransactionSetup): Transaction => {
   return {
@@ -53,13 +53,18 @@ const setupTransaction = (setup?: TransactionSetup): Transaction => {
   };
 };
 
-const setupWorldTimeApi = (setup?): WorldTimeApi => {
+interface WorldTimeSetup {
+  timezones?: any[];
+  time?: { datetime: string };
+}
+
+const setupWorldTimeApi = (setup?: WorldTimeSetup): WorldTimeApi => {
   return {
     getAllTimezones() {
-      return Promise.resolve();
+      return Promise.resolve(setup?.timezones);
     },
     getTimeBy(tz, retry) {
-      return Promise.resolve();
+      return Promise.resolve(setup?.time);
     },
     retry(fn, retry) {},
   };
