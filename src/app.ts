@@ -3,8 +3,8 @@ import "./core/extension_methods/Moment";
 
 import express from "express";
 import { serverPort } from "./config";
-import { handleError } from "./core/errorHandler";
 import { DIProvider } from "./core/diProvider";
+import { handleError } from "hl_error_api";
 
 const app = express();
 const diProvider = new DIProvider();

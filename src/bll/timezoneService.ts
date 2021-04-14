@@ -1,8 +1,8 @@
 import { Query } from "../dal/queries";
 import { Transaction } from "../dal/transactions";
 import moment from "moment";
-import { AppError } from "../core/appError";
-import { WorldTimeApi } from "../integrations/worldtime/worldtimeapi";
+import { AppError } from "hl_error_api";
+import { WorldTimeApi } from "world-time-api.hl";
 
 export class TimezoneService {
   constructor(private query: Query, private transac: Transaction, private worldApi: WorldTimeApi) {}
