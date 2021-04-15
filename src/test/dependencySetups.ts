@@ -1,6 +1,6 @@
 import { Query } from "../dal/queries";
 import { Transaction } from "../dal/transactions";
-import { WorldTimeApi } from "../integrations/worldtime/worldtimeapi";
+import { WorldTimeApi } from "world-time-api.hl";
 
 interface QuerySetup {
   areZonesPopulated?: boolean;

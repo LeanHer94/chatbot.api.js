@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { AppError } from "../core/appError";
+import { AppError } from "error-api.hl";
 
 const asyncShouldThrow = async (fn: Function, desc) => {
   try {

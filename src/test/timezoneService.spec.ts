@@ -2,22 +2,14 @@ import "../core/extension_methods/String";
 import "../core/extension_methods/Moment";
 
 import { TimezoneService } from "../bll/timezoneService";
-import { AppError } from "../core/appError";
 import { setupQuery, setupTransaction, setupWorldTimeApi } from "./dependencySetups";
-import { assert, expect } from "chai";
+import { expect } from "chai";
 import { asyncShouldThrow } from "./helpers";
 import moment from "moment";
 
 const chai = require("chai");
 const chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
-
-// areZonesPopulated(){ return Promise.resolve(areZonesPopulated) },
-//         getCachedTimeZone(){ return Promise.resolve('cached_timezone') },
-//         getRequestsCount(lookup){ return Promise.resolve('1') },
-//         getValidRegionPath(lookup){ return Promise.resolve('valid_path') },
-//         isKnownZone(lookup){ return Promise.resolve(false) },
-//         shouldUpdateCache(lookup){ return Promise.resolve(false) }
 
 describe("timezone service", () => {
   describe("time at", () => {
