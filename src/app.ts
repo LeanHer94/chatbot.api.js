@@ -4,7 +4,7 @@ import "./core/extension_methods/Moment";
 import express from "express";
 import { serverPort } from "./config";
 import { DIProvider } from "./core/diProvider";
-import { handleError } from "error-api.hl/lib";
+import { AppError, handleError } from "error-api.hl/lib";
 
 const app = express();
 const diProvider = new DIProvider();
@@ -19,7 +19,11 @@ app.post("/timeat", async (req, res, next) => {
   try {
     const result = await diProvider.getTimezoneService().timeAt(req.body?.Timezone);
     res.send(result);
-  } catch (err) {
+  } catch (err) { 
+    if (err instanceof AppError) {
+      res.send(err);
+    }
+
     next(err);
   }
 });
