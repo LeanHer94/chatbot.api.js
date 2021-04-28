@@ -4,7 +4,7 @@ import "./core/extension_methods/Moment";
 import express from "express";
 import { serverPort } from "./config";
 import { DIProvider } from "./core/diProvider";
-import { handleError } from "hl_error_api";
+import { handleError } from "error-api.hl/lib";
 
 const app = express();
 const diProvider = new DIProvider();
