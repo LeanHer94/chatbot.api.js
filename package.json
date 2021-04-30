@@ -8,7 +8,8 @@
     "url": "git+https://github.com/LeanHer94/chatbot.api.js.git"
   },
   "scripts": {
-    "start": "tsc && node dist/app.js",
+    "build": "tsc --build",
+    "start": "node dist/app.js",
     "dev": "nodemon --config nodemon.json --inspect-brk=9230 src/app.ts",
     "test": "mocha -r ts-node/register ./src/test/*.spec.ts"
   },
@@ -18,6 +19,9 @@
     "url": "https://github.com/LeanHer94/chatbot.api.js/issues"
   },
   "homepage": "https://github.com/LeanHer94/chatbot.api.js#readme",
+  "engines": {
+    "node": "14.15.1"
+  },
   "prisma": {
     "schema": "./src/dal/prisma/schema.prisma"
   },
