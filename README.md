@@ -1,4 +1,4 @@
-# chatbot.api.js
+# chatbot.api.js ![status](https://github.com/leandro-hl/chatbot.api.js/actions/workflows/node.js.yml/badge.svg)
 
 ## ENVIRONMENT
 * Install SQL Server Express (And Management Studio if you want to make your own queries). https://www.microsoft.com/en-us/sql-server/sql-server-downloads
