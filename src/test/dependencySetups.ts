@@ -39,16 +39,16 @@ interface TransactionSetup {}
 const setupTransaction = (setup?: TransactionSetup): Transaction => {
   return {
     insertLog(description, exception) {
-      return Promise.resolve({});
+      return Promise.resolve(1);
     },
     insertRequest(timezone) {
-      return Promise.resolve({});
+      return Promise.resolve(1);
     },
     tryInsertRegion(region, parent, available) {
-      return Promise.resolve({});
+      return Promise.resolve(1);
     },
-    upsertTimezoneCache(timezone, timeAt, requestTime) {
-      return Promise.resolve({});
+    upsertTimezoneCache(timezone, timeAt) {
+      return Promise.resolve(1);
     },
   };
 };
