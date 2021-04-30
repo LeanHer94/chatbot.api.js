@@ -2,25 +2,21 @@ import prisma from "./prisma/prismaClient";
 export class Transaction {
   upsertTimezoneCache = async (
     timezone: string,
-    timeAtTimezone: string,
-    requestTime: string
+    timeAtTimezone: string
   ) => {
-    return await prisma.$queryRaw`
-            IF NOT EXISTS (SELECT 1 FROM requestsCache WHERE timezone = ${timezone})
-            BEGIN
-                INSERT INTO requestsCache (timezone, time_at_timezone, time_request) 
-                VALUES (${timezone}, ${timeAtTimezone}, ${requestTime})
-            END ELSE
-                UPDATE requestsCache SET time_at_timezone = ${timeAtTimezone}, time_request = ${requestTime}
-                WHERE timezone = ${timezone}`;
+    return await prisma.$executeRaw`
+      INSERT INTO requestsCache (timezone, time_at_timezone, time_request) 
+      VALUES (${timezone}, to_timestamp(${timeAtTimezone}, 'YYYY/MM/DD hh24:mi:ss')::timestamp, NOW())
+      ON CONFLICT (timezone) DO UPDATE 
+      SET time_at_timezone = to_timestamp(${timeAtTimezone}, 'YYYY/MM/DD hh24:mi:ss')::timestamp, time_request = NOW()` 
   };
 
   insertLog = async (description: string, exception: any) => {
-    return await prisma.$queryRaw`INSERT INTO logs (description, exception) VALUES (${description}, ${exception})`;
+    return await prisma.$executeRaw`INSERT INTO logs (description, exception) VALUES (${description}, ${exception})`;
   };
 
   insertRequest = async (timezone: string) => {
-    return await prisma.$queryRaw`INSERT INTO requests (user_id,zone_id) SELECT 1, id FROM zones WHERE zone = ${timezone}`;
+    return await prisma.$executeRaw`INSERT INTO requests (user_id,zone_id) SELECT 1, id FROM zones WHERE zone = ${timezone}`;
   };
 
   tryInsertRegion = async (
@@ -28,11 +24,8 @@ export class Transaction {
     parent: string,
     available: boolean
   ) => {
-    return await prisma.$queryRaw`
-            IF NOT EXISTS (SELECT 1 FROM zones WHERE zone = ${region})
-            BEGIN
-                INSERT INTO zones (zone, parent, available)
-                VALUES (${region}, ${parent}, ${available})
-            END`;
+    return await prisma.$executeRaw`
+      INSERT INTO zones (zone, parent, available) SELECT ${region}, ${parent}, ${available}
+      WHERE NOT EXISTS (SELECT 1 FROM zones WHERE zone = ${region})`;
   };
 }

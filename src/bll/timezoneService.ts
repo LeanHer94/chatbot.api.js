@@ -34,8 +34,7 @@ export class TimezoneService {
     if (timezoneMoment?.isValid()) {
       await this.transac.upsertTimezoneCache(
         path,
-        timezoneMoment.lxStoreFormat(),
-        moment().lxStoreFormat()
+        timezoneMoment.lxStoreFormat()
       );
       return timezoneMoment.lxFormat();
     }
@@ -49,20 +48,27 @@ export class TimezoneService {
     return await this.query.getRequestsCount(input);
   }
 
+  tzs = [];
   private async populateTimezones() {
     if (!(await this.query.areZonesPopulated())) {
-      const timezones = (await this.worldApi.getAllTimezones()).data as Array<string>;
+      if (!this.tzs.length) {
+        this.tzs = (await this.worldApi.getAllTimezones()).data as Array<string>;
+      }
 
-      timezones.forEach((timezone) => {
+      const timezones = this.tzs;
+
+      for(const timezone of timezones) {
         const regions = timezone.getRegions();
-        const last = regions.pop();
+        const last = regions.slice(-1)[0];
 
         let parent = null;
 
-        regions.forEach(async (region) => {
+        for(const region of regions) {
           await this.transac.tryInsertRegion(region, parent, region == last);
-        });
-      });
+
+          parent = region;
+        }
+      }
     }
   }
 }

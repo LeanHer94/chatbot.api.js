@@ -7,12 +7,12 @@ export class Query {
             SELECT count(1) as result FROM requests h
             WHERE EXISTS(
                 SELECT 1 FROM
-                    (SELECT id FROM zones WHERE zone = ${lookup} AND available = 1 union
-                    SELECT id FROM zones WHERE parent = ${lookup} AND available = 1 union
+                    (SELECT id FROM zones WHERE zone = ${lookup} AND available = true union
+                    SELECT id FROM zones WHERE parent = ${lookup} AND available = true union
                     SELECT id FROM zones z1 WHERE
                                 EXISTS(SELECT zone FROM zones z2
                                         WHERE z2.parent = ${lookup}
-                                        AND z2.available = 0
+                                        AND z2.available = false
                                         AND z2.zone = z1.parent)) as ids
                 WHERE ids.id = h.zone_id);`.then((r) => {
       return r[0].result.toString();
@@ -27,9 +27,9 @@ export class Query {
             FROM zones z1 
             WHERE zone = ${lookup} AND EXISTS (SELECT 1 FROM zones z2 WHERE z1.parent = z2.zone AND z2.parent IS NULL)
             UNION ALL
-            SELECT CONCAT(parent, '/', zone, '/', ${lookup}) 
-            FROM zones z1
-            WHERE parent IS NOT NULL AND EXISTS (SELECT 1 FROM zones z2 WHERE zone = ${lookup} AND z1.zone = z2.parent)`.then(
+            SELECT CONCAT(z1.parent, '/', z1.zone, '/', z2.zone) 
+            FROM zones z1 INNER JOIN zones z2 ON z2.zone = ${lookup}
+            WHERE z1.parent IS NOT NULL AND EXISTS (SELECT 1 FROM zones z2 WHERE zone = ${lookup} AND z1.zone = z2.parent)`.then(
       (r) => {
         return r[0].zone;
       }
@@ -45,7 +45,7 @@ export class Query {
   }
 
   isKnownZone(lookup: string): Promise<boolean> {
-    return prisma.$queryRaw`SELECT COUNT(1) AS result FROM zones WHERE zone = ${lookup} AND available = 1`.then(
+    return prisma.$queryRaw`SELECT COUNT(1) AS result FROM zones WHERE zone = ${lookup} AND available = true`.then(
       (count) => {
         return count.length > 0 && count[0].result > 0;
       }
@@ -61,7 +61,7 @@ export class Query {
   }
 
   shouldUpdateCache(lookup: string): Promise<boolean> {
-    return prisma.$queryRaw`SELECT DATEDIFF(MINUTE, time_request, GETDATE()) as result from requestsCache WHERE timezone = ${lookup}`.then(
+    return prisma.$queryRaw`SELECT EXTRACT(MINUTE FROM NOW()-time_request) as result from requestsCache WHERE timezone = ${lookup}`.then(
       (r) => {
         return r.length == 0 || r[0].result > apiCacheTime;
       }
