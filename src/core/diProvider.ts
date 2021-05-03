@@ -1,18 +1,15 @@
 import { TimezoneService } from "../bll/timezoneService";
-import { Query } from "../dal/queries";
-import { Transaction } from "../dal/transactions";
+import { Repository } from "../dal/repository";
 import { WorldTimeApi } from "world-time-api.hl";
 import { apiRetry, apiRetryTime, worldtimeapi } from "../config";
 
 export class DIProvider {
     timezoneService: TimezoneService;
-    query: Query;
-    transac: Transaction;
+    repo: Repository;
     worldApi: WorldTimeApi;
 
     constructor() {
-        this.query = new Query();
-        this.transac = new Transaction();
+        this.repo = new Repository(require('pg-promise')());
 
         const worldApiConfig = {
             apiRetry: +apiRetry, 
@@ -21,7 +18,7 @@ export class DIProvider {
         };
 
         this.worldApi = new WorldTimeApi(worldApiConfig);
-        this.timezoneService = new TimezoneService(this.query, this.transac, this.worldApi);
+        this.timezoneService = new TimezoneService(this.repo, this.worldApi);
     }
 
     getTimezoneService() {

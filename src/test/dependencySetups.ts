@@ -1,8 +1,7 @@
-import { Query } from "../dal/queries";
-import { Transaction } from "../dal/transactions";
+import { Repository } from "../dal/repository";
 import { WorldTimeApi } from "world-time-api.hl";
 
-interface QuerySetup {
+interface RepositorySetup {
   areZonesPopulated?: boolean;
   cachedTimezone?: string;
   requestsCount?: string;
@@ -11,46 +10,54 @@ interface QuerySetup {
   updateCache?: boolean;
 }
 
-const setupQuery = (setup: QuerySetup): Query => {
-  return {
-    areZonesPopulated() {
-      return Promise.resolve(setup.areZonesPopulated ?? true);
-    },
-    getCachedTimeZone() {
-      return Promise.resolve(setup.cachedTimezone ?? "cached_timezone");
-    },
-    getRequestsCount(lookup) {
-      return Promise.resolve(setup.requestsCount ?? "1");
-    },
-    getValidRegionPath(lookup) {
-      return Promise.resolve(setup.validPath ?? "valid_path");
-    },
-    isKnownZone(lookup) {
-      return Promise.resolve(setup.isKnownZone ?? true);
-    },
-    shouldUpdateCache(lookup) {
-      return Promise.resolve(setup.updateCache ?? false);
-    },
-  };
-};
+class Mock extends Repository {
+  constructor(private setup: RepositorySetup){
+    super(() => {});
+  }
 
-interface TransactionSetup {}
+  areZonesPopulated() {
+    return Promise.resolve(this.setup.areZonesPopulated ?? true);
+  }
 
-const setupTransaction = (setup?: TransactionSetup): Transaction => {
-  return {
-    insertLog(description, exception) {
-      return Promise.resolve(1);
-    },
-    insertRequest(timezone) {
-      return Promise.resolve(1);
-    },
-    tryInsertRegion(region, parent, available) {
-      return Promise.resolve(1);
-    },
-    upsertTimezoneCache(timezone, timeAt) {
-      return Promise.resolve(1);
-    },
-  };
+  getCachedTimeZone() {
+    return Promise.resolve(this.setup.cachedTimezone ?? "cached_timezone");
+  }
+
+  getRequestsCount(lookup) {
+    return Promise.resolve(this.setup.requestsCount ?? "1");
+  }
+
+  getValidRegionPath(lookup) {
+    return Promise.resolve(this.setup.validPath ?? "valid_path");
+  }
+
+  isKnownZone(lookup) {
+    return Promise.resolve(this.setup.isKnownZone ?? true);
+  }
+
+  shouldUpdateCache(lookup) {
+    return Promise.resolve(this.setup.updateCache ?? false);
+  }
+
+  insertLog(description, exception) {
+    return Promise.resolve(1);
+  }
+
+  insertRequest(timezone) {
+    return Promise.resolve(1);
+  }
+
+  tryInsertRegion(region, parent, available) {
+    return Promise.resolve(1);
+  }
+
+  upsertTimezoneCache(timezone, timeAt) {
+    return Promise.resolve(1);
+  }
+}
+
+const setupRepository = (setup: RepositorySetup) => {
+  return new Mock(setup)
 };
 
 interface WorldTimeSetup {
@@ -70,4 +77,4 @@ const setupWorldTimeApi = (setup?: WorldTimeSetup): WorldTimeApi => {
   };
 };
 
-export { setupQuery, setupTransaction, setupWorldTimeApi };
+export { setupRepository, setupWorldTimeApi };

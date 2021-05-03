@@ -4,6 +4,7 @@ declare module "moment" {
     export interface Moment {
         lxFormat(): string;
         lxStoreFormat(): string;
+        lxApiFormat(): string;
     }
 }
 
@@ -13,4 +14,8 @@ declare module "moment" {
 
 (<any>moment).fn.lxStoreFormat = function() {
     return this.format('yyy-MM-D HH:mm:ss');
+};
+
+(<any>moment).fn.lxApiFormat = function() {
+    return this.format('YYYY-MM-DDTHH:mm:ss.SSSSZ');
 };
