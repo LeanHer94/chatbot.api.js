@@ -1,0 +1,7 @@
+CREATE OR REPLACE FUNCTION fn_are_zones_populated()
+RETURNS BOOLEAN AS 
+$$
+BEGIN
+    RETURN (SELECT COUNT(1) FROM zones) > 1;
+END
+$$ LANGUAGE plpgsql;
