@@ -1,29 +1,28 @@
-import { Query } from "../dal/queries";
-import { Transaction } from "../dal/transactions";
+import { Repository } from "../dal/repository";
 import moment from "moment";
 import { AppError } from "error-api.hl";
 import { WorldTimeApi } from "world-time-api.hl";
 
 export class TimezoneService {
-  constructor(private query: Query, private transac: Transaction, private worldApi: WorldTimeApi) {}
+  constructor(private repo: Repository, private worldApi: WorldTimeApi) {}
 
   async timeAt(input: string) {
     await this.populateTimezones();
 
-    const isKnown = await this.query.isKnownZone(input.getLastRegion());
+    const isKnown = await this.repo.isKnownZone(input.getLastRegion());
 
     if (!isKnown) {
       throw new AppError("unknown timezone");
     }
 
-    await this.transac.insertRequest(input);
+    await this.repo.insertRequest(input);
 
-    const path = await this.query.getValidRegionPath(input);
-    const isCacheInvalid = await this.query.shouldUpdateCache(path);
+    const path = await this.repo.getValidRegionPath(input);
+    const isCacheInvalid = await this.repo.shouldUpdateCache(path);
 
     if (!isCacheInvalid) {
       return moment
-        .parseZone(await this.query.getCachedTimeZone(path))
+        .parseZone(await this.repo.getCachedTimeZone(path))
         .lxFormat();
     }
 
@@ -32,7 +31,7 @@ export class TimezoneService {
     const timezoneMoment = moment.parseZone(time.datetime, moment.ISO_8601);
 
     if (timezoneMoment?.isValid()) {
-      await this.transac.upsertTimezoneCache(
+      await this.repo.upsertTimezoneCache(
         path,
         timezoneMoment.lxStoreFormat()
       );
@@ -45,12 +44,14 @@ export class TimezoneService {
   async timePopularity(input: string) {
     await this.populateTimezones();
 
-    return await this.query.getRequestsCount(input);
+    const result = await this.repo.getRequestsCount(input);
+
+    return result
   }
 
   tzs = [];
   private async populateTimezones() {
-    if (!(await this.query.areZonesPopulated())) {
+    if (!(await this.repo.areZonesPopulated())) {
       if (!this.tzs.length) {
         this.tzs = (await this.worldApi.getAllTimezones()).data as Array<string>;
       }
@@ -64,7 +65,7 @@ export class TimezoneService {
         let parent = null;
 
         for(const region of regions) {
-          await this.transac.tryInsertRegion(region, parent, region == last);
+          await this.repo.tryInsertRegion(region, parent, region == last);
 
           parent = region;
         }
