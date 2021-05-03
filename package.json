@@ -22,17 +22,15 @@
   "engines": {
     "node": "14.15.1"
   },
-  "prisma": {
-    "schema": "./src/dal/prisma/schema.prisma"
-  },
   "dependencies": {
-    "@prisma/client": "^2.20.1",
     "axios": "^0.21.1",
     "chai-as-promised": "^7.1.1",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
     "error-api.hl": "^1.0.4",
+    "express": "^4.17.1",
     "moment": "^2.29.1",
+    "pg": "^8.6.0",
+    "pg-promise": "^10.10.2",
     "world-time-api.hl": "^1.0.0"
   },
   "devDependencies": {
@@ -42,7 +40,6 @@
     "@types/mocha": "^8.2.2",
     "chai": "^4.3.4",
     "mocha": "^8.3.2",
-    "prisma": "^2.20.1",
     "ts-node": "^9.1.1",
     "typescript": "^4.2"
   }
